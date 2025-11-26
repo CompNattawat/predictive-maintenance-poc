@@ -18,10 +18,10 @@ predictive-maintenance-poc/
 ## 1. การเตรียมเครื่อง
 
 ต้องติดตั้ง:
-- Node.js (แนะนำ v18+)
+- Node.js (v18+ แนะนำ v20)
 - npm หรือ yarn
 
-จากนั้นแตกไฟล์ ZIP แล้วเปิดโฟลเดอร์ `predictive-maintenance-poc/` ใน VS Code หรือ IDE ที่ใช้
+จากนั้นเปิดโฟลเดอร์ `predictive-maintenance-poc/` ใน IDE ที่ใช้ (โฟลเดอร์นี้ยังไม่ถูก push ขึ้น GitHub ถ้ายังไม่ได้ `git init`)
 
 ---
 
@@ -78,11 +78,14 @@ backend/
 │   ├── main.ts
 │   ├── app.module.ts
 │   ├── sensor/
+│   │   ├── dto/
+│   │   │   └── create-sensor-data.dto.ts
 │   │   ├── sensor.controller.ts
 │   │   └── sensor.service.ts
 │   ├── prediction/
 │   │   ├── prediction.controller.ts
-│   │   └── prediction.service.ts
+│   │   ├── prediction.service.ts
+│   │   └── prediction.types.ts
 │   └── common/
 │       └── file-storage/
 │           └── json-storage.service.ts
@@ -120,12 +123,20 @@ frontend/
 └── src/
     ├── main.tsx
     ├── App.tsx
-    ├── components/
-    │   ├── SensorInputPanel.tsx
-    │   ├── TemperatureChart.tsx
-    │   └── StatusPanel.tsx
-    └── services/
-        └── api.ts
+    ├── pages/
+    │   └── DashboardPage.tsx
+    ├── modules/
+    │   ├── sensor/
+    │   │   └── SensorInputPanel.tsx
+    │   └── prediction/
+    │       ├── StatusPanel.tsx
+    │       └── TemperatureChart.tsx
+    ├── services/
+    │   └── api.ts
+    ├── styles/
+    │   └── global.css
+    └── types/
+        └── prediction.ts
 ```
 
 ### 5.1 SensorInputPanel
@@ -170,7 +181,14 @@ frontend/
 
 ---
 
-## 8. ใช้คู่กับ AI (Prompt)
+## 8. การทดสอบที่รันแล้ว
 
-สามารถเอา `README.md` นี้และไฟล์ `full_requirements.md` ไปใส่ใน Cursor / ChatGPT  
-เพื่อให้ช่วย generate โค้ดเพิ่มเติม, refactor, หรือเพิ่มฟังก์ชันอื่น ๆ ได้ตามต้องการ
+- Backend: `cd backend && npm test -- src/prediction/prediction.service.spec.ts` (ผ่านทั้ง 4 เคส) 
+
+---
+
+## 9. การพัฒนา & ปัญหาเล็กน้อย
+
+- Frontend dev server จะเรียก `crypto$2.getRandomValues` จาก Vite bundle ก่อน ถ้า environment (เช่น sandbox) ไม่มี `node:crypto` แบบนั้นจะเกิด error และหน้า `http://localhost:5173` จะไม่ขึ้น
+- ถ้าทำงานบนเครื่องตัวเอง (Node 20+ ที่มี `crypto.webcrypto.getRandomValues`) แล้วรัน `npm run dev` ใน `frontend/` จะเปิด dashboard ได้ตามปกติ
+
