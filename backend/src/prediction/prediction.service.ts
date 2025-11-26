@@ -27,7 +27,9 @@ export class PredictionService {
     }
 
     const regression = this.calculateRegression(records);
-    const prediction = this.calculatePrediction(regression, records);
+    const latestRecord = records[records.length - 1];
+    const hasOverheatPoint = latestRecord && latestRecord.temperature >= PREDICTION_THRESHOLD;
+    const prediction = this.calculatePrediction(regression, records, hasOverheatPoint);
 
     const payload: PredictionData = {
       threshold: PREDICTION_THRESHOLD,
@@ -78,10 +80,20 @@ export class PredictionService {
   private calculatePrediction(
     regression: RegressionResult,
     records: RecordPoint[],
+    hasOverheatPoint: boolean,
   ): PredictionDetails {
     const lastTimestamp = records.length
       ? new Date(records[records.length - 1].timestamp)
       : new Date();
+
+    if (hasOverheatPoint) {
+      return {
+        status: PredictionStatus.OVERHEATED,
+        remainingHours: 0,
+        predictedDateTime: lastTimestamp.toISOString(),
+        message: 'มีค่าอุณหภูมิสูงกว่า 100°C ในข้อมูลล่าสุด',
+      };
+    }
 
     if (regression.slope <= 0) {
       return {

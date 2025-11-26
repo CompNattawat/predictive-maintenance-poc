@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SensorInputPanel } from '../modules/sensor/SensorInputPanel';
-import { StatusPanel } from '../modules/prediction/StatusPanel';
+import { formatRemainingHours, StatusPanel } from '../modules/prediction/StatusPanel';
 import { TemperatureChart } from '../modules/prediction/TemperatureChart';
 import { createSensorData, getPrediction } from '../services/api';
 import type { PredictionResponse, RecordPoint } from '../types/prediction';
+import { STATUS_LABELS } from '../modules/prediction/StatusPanel';
 
 export const DashboardPage: React.FC = () => {
   const [prediction, setPrediction] = useState<PredictionResponse | null>(null);
@@ -78,7 +79,7 @@ export const DashboardPage: React.FC = () => {
             <div className="summary-body">
               <div>
                 <p className="label">Status</p>
-                <strong className="value">{summary.status}</strong>
+                <strong className="value">{STATUS_LABELS[summary.status]}</strong>
               </div>
               <div>
                 <p className="label">Slope / Intercept</p>
@@ -93,7 +94,7 @@ export const DashboardPage: React.FC = () => {
               {typeof summary.remainingHours === 'number' && (
                 <div>
                   <p className="label">Remaining hours</p>
-                  <span className="value">{summary.remainingHours.toFixed(2)} ชม.</span>
+                  <span className="value">{formatRemainingHours(summary.remainingHours)}</span>
                 </div>
               )}
             </div>

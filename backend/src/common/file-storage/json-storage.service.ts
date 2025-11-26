@@ -4,7 +4,7 @@ import * as path from 'path';
 
 @Injectable()
 export class JsonStorageService {
-  private readonly filePath = path.join(__dirname, '..', '..', 'data', 'sensor-data.json');
+  private readonly filePath = path.join(process.cwd(), 'data', 'sensor-data.json');
 
   private async ensureFile() {
     try {
